@@ -1,0 +1,8 @@
+.app-shell {
+  min-height: calc(100vh - 64px);
+}
+
+.active-link {
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  border-radius: 8px;
+}

@@ -1,0 +1,41 @@
+<section class="grid gap-4 lg:grid-cols-3">
+  <mat-card class="p-4">
+    <h2 class="mb-3 font-semibold">Verificar contato</h2>
+    <form [formGroup]="checkForm" (ngSubmit)="checkExists()" class="space-y-3">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>E-mail</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit">Verificar</button>
+      @if (checkResult() !== null) {
+        <p class="text-sm font-medium">{{ checkResult() ? 'Contato existe.' : 'Contato não encontrado.' }}</p>
+      }
+    </form>
+  </mat-card>
+
+  <mat-card class="p-4">
+    <h2 class="mb-3 font-semibold">Atualizar e-mail</h2>
+    <form [formGroup]="updateForm" (ngSubmit)="updateEmail()" class="space-y-3">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>E-mail atual</mat-label>
+        <input matInput formControlName="contact" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Novo e-mail</mat-label>
+        <input matInput formControlName="newEmail" />
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit">Atualizar</button>
+    </form>
+  </mat-card>
+
+  <mat-card class="p-4">
+    <h2 class="mb-3 font-semibold">Remover manualmente</h2>
+    <form [formGroup]="removeForm" (ngSubmit)="removeManually()" class="space-y-3">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>E-mail</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+      <button mat-flat-button color="warn" type="submit">Remover</button>
+    </form>
+  </mat-card>
+</section>

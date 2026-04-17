@@ -1,0 +1,44 @@
+<mat-card class="p-6">
+  <h2 class="mb-4 text-xl font-semibold">Importar contatos</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Contatos (nome;email ou apenas email)</mat-label>
+      <textarea matInput formControlName="contacts" rows="10"></textarea>
+      @if (form.controls.contacts.invalid && form.controls.contacts.touched) {
+        <mat-error>Informe ao menos um contato.</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <mat-form-field appearance="outline" class="min-w-72 grow">
+        <mat-label>Adicionar tag</mat-label>
+        <input
+          matInput
+          formControlName="tagInput"
+          (keydown.enter)="$event.preventDefault(); addTagFromInput(form.controls.tagInput.value)"
+        />
+      </mat-form-field>
+      <button type="button" mat-stroked-button (click)="addTagFromInput(form.controls.tagInput.value)">
+        Adicionar tag
+      </button>
+      <label mat-stroked-button class="cursor-pointer">
+        <input class="hidden" type="file" accept=".txt,.csv" (change)="loadFile($event)" />
+        Upload .txt/.csv
+      </label>
+    </div>
+
+    <mat-chip-set>
+      @for (tag of tags(); track tag) {
+        <mat-chip-row [removable]="true" (removed)="removeTag(tag)">
+          {{ tag }}
+          <button matChipRemove aria-label="Remover tag {{ tag }}">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-set>
+
+    <button mat-flat-button color="primary" type="submit">Importar contatos</button>
+  </form>
+</mat-card>

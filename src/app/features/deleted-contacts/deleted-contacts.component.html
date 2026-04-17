@@ -1,0 +1,36 @@
+<mat-card class="p-4">
+  <h2 class="mb-4 text-xl font-semibold">Contatos removidos</h2>
+
+  <form [formGroup]="form" class="mb-4 grid gap-3 md:grid-cols-2">
+    <mat-form-field appearance="outline">
+      <mat-label>Filtrar por e-mail</mat-label>
+      <input matInput formControlName="email" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Filtrar por motivo</mat-label>
+      <input matInput formControlName="reason" />
+    </mat-form-field>
+  </form>
+
+  @if (filtered().length === 0) {
+    <p class="text-slate-500">Nenhum registro encontrado.</p>
+  } @else {
+    <table mat-table [dataSource]="filtered()" class="w-full">
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>E-mail</th>
+        <td mat-cell *matCellDef="let item">{{ item.email }}</td>
+      </ng-container>
+      <ng-container matColumnDef="reason">
+        <th mat-header-cell *matHeaderCellDef>Motivo</th>
+        <td mat-cell *matCellDef="let item">{{ item.reason }}</td>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Data</th>
+        <td mat-cell *matCellDef="let item">{{ item.createdAt || '-' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  }
+</mat-card>

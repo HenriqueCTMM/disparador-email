@@ -1,0 +1,31 @@
+<mat-card class="mx-auto max-w-2xl p-6">
+  <h2 class="mb-4 text-xl font-semibold">Disparo de mensagens</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Template</mat-label>
+      <mat-select formControlName="templateId">
+        @for (template of templates(); track template._id ?? template.subject) {
+          <mat-option [value]="template._id">{{ template.subject }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.templateId.invalid && form.controls.templateId.touched) {
+        <mat-error>Selecione um template.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Tags</mat-label>
+      <mat-select formControlName="tags" multiple>
+        @for (tag of tags(); track tag._id ?? tag.title) {
+          <mat-option [value]="tag.title">{{ tag.title }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.tags.invalid && form.controls.tags.touched) {
+        <mat-error>Selecione ao menos uma tag.</mat-error>
+      }
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit">Enfileirar disparo</button>
+  </form>
+</mat-card>
