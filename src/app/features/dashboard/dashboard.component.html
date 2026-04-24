@@ -1,0 +1,23 @@
+<section class="space-y-6">
+  <div class="grid gap-4 md:grid-cols-3">
+    <mat-card class="p-4">
+      <p class="text-sm text-slate-600">Templates</p>
+      <p class="text-3xl font-semibold">{{ templateCount() }}</p>
+    </mat-card>
+    <mat-card class="p-4">
+      <p class="text-sm text-slate-600">Tags</p>
+      <p class="text-3xl font-semibold">{{ tagCount() }}</p>
+    </mat-card>
+    <mat-card class="p-4">
+      <p class="text-sm text-slate-600">Contatos removidos</p>
+      <p class="text-3xl font-semibold">{{ deletedCount() }}</p>
+    </mat-card>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <a mat-stroked-button routerLink="/importar-contatos">Importar contatos</a>
+    <a mat-stroked-button routerLink="/tags-contatos">Gerenciar tags</a>
+    <a mat-stroked-button routerLink="/templates">Gerenciar templates</a>
+    <a mat-stroked-button routerLink="/disparo">Disparar campanha</a>
+  </div>
+</section>

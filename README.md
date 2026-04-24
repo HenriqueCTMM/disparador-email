@@ -1,59 +1,108 @@
-# DisparadorEmail
+# Disparador de E-mails (Front-end)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.7.
+Aplicação Angular para operação da API de disparo de e-mails, com módulos para contatos, tags, templates, campanhas e manutenção.
 
-## Development server
+## Stack
 
-To start a local development server, run:
+- Angular 21 (componentes standalone + lazy loading por rota)
+- Angular Material (UI, tabelas, dialogs, snackbars)
+- TailwindCSS (layout utilitário e responsivo)
+- HttpClient com interceptors para base URL, loading global e tratamento de erro
+- Formulários reativos com validações
 
-```bash
-ng serve
-```
+## Setup
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Pré-requisitos
 
-## Code scaffolding
+- Node.js 20+
+- npm 10+
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Instalação
 
 ```bash
-ng generate --help
+npm install
 ```
 
-## Building
-
-To build the project run:
+### Rodar localmente
 
 ```bash
-ng build
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+A aplicação estará em `http://localhost:4200`.
 
-## Running unit tests
+> A API esperada está em `http://localhost:3334` por padrão.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Ambiente
+
+Configuração em `src/environments/environment*.ts`:
+
+```ts
+apiBaseUrl: 'http://localhost:3334'
+```
+
+## Estrutura de pastas
+
+- `src/app/core/models`: DTOs/interfaces tipadas
+- `src/app/core/services`: serviços HTTP por domínio
+- `src/app/core/interceptors`: interceptors globais
+- `src/app/features`: telas por domínio (feature-first)
+- `src/app/shared`: componentes e utilitários reutilizáveis
+
+## Mapeamento telas -> endpoints
+
+### Dashboard (`/`)
+- `GET /templates`
+- `POST /d555a343/tags`
+- `POST /321sasr323/delContatos`
+
+### Importar Contatos (`/importar-contatos`)
+- `POST /b0cbf7/list`
+
+### Tags & Contatos (`/tags-contatos`)
+- `POST /d555a343/tags`
+- `GET /abc/list/:tagId`
+
+### Templates (`/templates`)
+- `POST /templates`
+- `GET /templates`
+- `PUT /templates/:templateId`
+- `DELETE /templates/:templateId`
+
+### Disparo (`/disparo`)
+- `POST /f45f76/messages`
+
+### Manutenção (`/manutencao`)
+- `POST /CS2aa3242/contact/:contact`
+- `PUT /CS2aa3242/contact`
+- `PUT /321sasr323/delContatos/:contact`
+
+### Contatos Removidos (`/contatos-removidos`)
+- `POST /321sasr323/delContatos`
+
+### Ferramentas (`/ferramentas`)
+- `POST /a89sdyhsad78/xmailerReportError`
+
+### Unsubscribe (`/unsubscribe`)
+- Tela amigável para uso com links do endpoint `GET /dltM?...`
+
+## Tratamento defensivo adotado
+
+- Endpoint de remoção manual retorna tipo não determinístico; a UI trata resposta como `unknown` e aplica fallback textual amigável.
+- Mensagens de erro usam prioridade para `error.message` do backend e fallback por status HTTP (400/404/500/0).
+- E-mails são normalizados para lowercase e trim antes de operações críticas de manutenção.
+
+## Endpoints sem UI administrativa
+
+- `POST /Bounce`
+- `POST /Complaint`
+
+Mantidos apenas como documentação, por serem webhooks SES.
+
+## Testes
 
 ```bash
-ng test
+npm test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Cobertura inicial inclui serviços de contatos e templates, além do shell principal da aplicação.

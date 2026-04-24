@@ -1,0 +1,57 @@
+<section class="space-y-4">
+  <div class="grid gap-4 lg:grid-cols-[360px_1fr]">
+    <mat-card class="p-4">
+      <div class="mb-3 flex items-center justify-between gap-2">
+        <h2 class="text-lg font-semibold">Templates</h2>
+        <button mat-flat-button color="primary" (click)="createTemplate()">Novo</button>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Buscar</mat-label>
+        <input matInput [value]="search()" (input)="onSearchInput($event)" />
+      </mat-form-field>
+
+      <mat-nav-list>
+        @for (template of filteredTemplates(); track template._id ?? template.subject) {
+          <a mat-list-item (click)="selectedTemplate.set(template)">
+            <span matListItemTitle>{{ template.subject }}</span>
+            <div class="flex gap-1" matListItemMeta>
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); editTemplate(template)"
+                aria-label="Editar template"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); deleteTemplate(template)"
+                aria-label="Excluir template"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </a>
+        }
+      </mat-nav-list>
+    </mat-card>
+
+    <mat-card class="p-4">
+      @if (!selectedTemplate()) {
+        <p class="text-slate-500">Selecione um template para visualizar.</p>
+      } @else {
+        <h3 class="text-xl font-semibold">{{ selectedTemplate()?.subject }}</h3>
+        <p class="text-sm text-slate-500">Pré-visualização completa do HTML sanitizado.</p>
+      }
+    </mat-card>
+  </div>
+
+  <mat-card class="p-4">
+    <h4 class="mb-3 text-lg font-semibold">Preview do template</h4>
+    @if (!selectedTemplate()) {
+      <p class="text-slate-500">Sem template selecionado.</p>
+    } @else {
+      <div class="min-h-80 w-full overflow-auto rounded-md border border-slate-200 bg-white p-4" [innerHTML]="safePreview()"></div>
+    }
+  </mat-card>
+</section>
