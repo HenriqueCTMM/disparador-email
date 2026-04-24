@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Template } from '../../core/models/template.model';
 import { TemplatesService } from '../../core/services/templates.service';
@@ -27,11 +27,6 @@ import { TemplateFormDialogComponent } from './template-form-dialog.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplatesComponent {
-  onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement | null;
-    this.search.set(input?.value ?? '');
-  }
-
   private readonly templatesService = inject(TemplatesService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -46,13 +41,30 @@ export class TemplatesComponent {
     return this.templates().filter((template) => template.subject.toLowerCase().includes(term));
   });
 
-  readonly safePreview = computed(() => {
+  readonly safePreview = computed<SafeHtml>(() => {
     const html = this.selectedTemplate()?.html ?? '';
-    return this.sanitizer.sanitize(SecurityContext.HTML, html) ?? '';
+    const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, html) ?? '';
+    const withoutDangerousTags = sanitized
+      .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+      .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '')
+      .replace(/<object[\s\S]*?>[\s\S]*?<\/object>/gi, '');
+    const withoutInlineHandlers = withoutDangerousTags
+      .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+      .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
+      .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
+      .replace(/(href|src)\s*=\s*"javascript:[^"]*"/gi, '$1="#"')
+      .replace(/(href|src)\s*=\s*'javascript:[^']*'/gi, "$1='#'");
+
+    return this.sanitizer.bypassSecurityTrustHtml(withoutInlineHandlers);
   });
 
   constructor() {
     this.loadTemplates();
+  }
+
+  onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.search.set(input?.value ?? '');
   }
 
   loadTemplates(): void {
@@ -70,6 +82,7 @@ export class TemplatesComponent {
         if (!payload) {
           return;
         }
+
         this.templatesService.createTemplate(payload).subscribe(() => {
           this.snackBar.open('Template criado com sucesso.', 'Fechar', { duration: 4000 });
           this.loadTemplates();
@@ -87,6 +100,7 @@ export class TemplatesComponent {
         if (!payload || !template._id) {
           return;
         }
+
         this.templatesService.updateTemplate(template._id, payload).subscribe(() => {
           this.snackBar.open('Template atualizado.', 'Fechar', { duration: 4000 });
           this.loadTemplates();
@@ -112,6 +126,7 @@ export class TemplatesComponent {
         if (!confirmed) {
           return;
         }
+
         this.templatesService.deleteTemplate(template._id!).subscribe(() => {
           this.snackBar.open('Template removido.', 'Fechar', { duration: 4000 });
           this.loadTemplates();
