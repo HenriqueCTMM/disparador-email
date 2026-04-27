@@ -38,7 +38,7 @@ A aplicação estará em `http://localhost:4200`.
 Configuração em `src/environments/environment*.ts`:
 
 ```ts
-apiBaseUrl: 'http://localhost:3334'
+apiBaseUrl: 'http://localhost:3334';
 ```
 
 ## Estrutura de pastas
@@ -52,38 +52,49 @@ apiBaseUrl: 'http://localhost:3334'
 ## Mapeamento telas -> endpoints
 
 ### Dashboard (`/`)
+
 - `GET /templates`
 - `POST /d555a343/tags`
 - `POST /321sasr323/delContatos`
 
 ### Importar Contatos (`/importar-contatos`)
+
 - `POST /b0cbf7/list`
 
 ### Tags & Contatos (`/tags-contatos`)
-- `POST /d555a343/tags`
+
+- `POST /d555a343/tags` (listagem quando payload vazio, criação quando payload contém `title`)
+- `PUT /d555a343/tags/:tagId`
+- `DELETE /d555a343/tags/:tagId`
 - `GET /abc/list/:tagId`
 
 ### Templates (`/templates`)
+
 - `POST /templates`
 - `GET /templates`
 - `PUT /templates/:templateId`
 - `DELETE /templates/:templateId`
 
 ### Disparo (`/disparo`)
+
 - `POST /f45f76/messages`
 
 ### Manutenção (`/manutencao`)
+
 - `POST /CS2aa3242/contact/:contact`
 - `PUT /CS2aa3242/contact`
 - `PUT /321sasr323/delContatos/:contact`
 
 ### Contatos Removidos (`/contatos-removidos`)
+
 - `POST /321sasr323/delContatos`
 
 ### Ferramentas (`/ferramentas`)
+
 - `POST /a89sdyhsad78/xmailerReportError`
 
 ### Unsubscribe (`/unsubscribe`)
+
 - Tela amigável para uso com links do endpoint `GET /dltM?...`
 
 ## Tratamento defensivo adotado

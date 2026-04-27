@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, SecurityContext, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,24 +38,20 @@ export class TemplatesComponent {
 
   readonly filteredTemplates = computed(() => {
     const term = this.search().trim().toLowerCase();
-    return this.templates().filter((template) => template.subject.toLowerCase().includes(term));
+    return this.templates().filter((template) =>
+      template.subject.toLowerCase().includes(term)
+    );
   });
 
+  // Signal computado melhorado e seguro
   readonly safePreview = computed<SafeHtml>(() => {
     const html = this.selectedTemplate()?.html ?? '';
-    const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, html) ?? '';
-    const withoutDangerousTags = sanitized
-      .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-      .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '')
-      .replace(/<object[\s\S]*?>[\s\S]*?<\/object>/gi, '');
-    const withoutInlineHandlers = withoutDangerousTags
-      .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
-      .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
-      .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
-      .replace(/(href|src)\s*=\s*"javascript:[^"]*"/gi, '$1="#"')
-      .replace(/(href|src)\s*=\s*'javascript:[^']*'/gi, "$1='#'");
 
-    return this.sanitizer.bypassSecurityTrustHtml(withoutInlineHandlers);
+    // Confiamos o HTML bruto ao Angular para ser passado ao srcdoc.
+    // Usamos bypassSecurityTrustHtml para NÃO remover as tags <style> que são vitais para o layout.
+    // A segurança (prevenção de XSS) está garantida pelo atributo `sandbox=""` no <iframe> do template,
+    // que instrui o navegador a bloquear totalmente qualquer execução de JavaScript.
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 
   constructor() {
@@ -79,9 +75,7 @@ export class TemplatesComponent {
       .open(TemplateFormDialogComponent, { data: { mode: 'create' } })
       .afterClosed()
       .subscribe((payload) => {
-        if (!payload) {
-          return;
-        }
+        if (!payload) return;
 
         this.templatesService.createTemplate(payload).subscribe(() => {
           this.snackBar.open('Template criado com sucesso.', 'Fechar', { duration: 4000 });
@@ -97,9 +91,7 @@ export class TemplatesComponent {
       })
       .afterClosed()
       .subscribe((payload) => {
-        if (!payload || !template._id) {
-          return;
-        }
+        if (!payload || !template._id) return;
 
         this.templatesService.updateTemplate(template._id, payload).subscribe(() => {
           this.snackBar.open('Template atualizado.', 'Fechar', { duration: 4000 });
@@ -109,9 +101,7 @@ export class TemplatesComponent {
   }
 
   deleteTemplate(template: Template): void {
-    if (!template._id) {
-      return;
-    }
+    if (!template._id) return;
 
     this.dialog
       .open(ConfirmDialogComponent, {
@@ -123,9 +113,7 @@ export class TemplatesComponent {
       })
       .afterClosed()
       .subscribe((confirmed) => {
-        if (!confirmed) {
-          return;
-        }
+        if (!confirmed) return;
 
         this.templatesService.deleteTemplate(template._id!).subscribe(() => {
           this.snackBar.open('Template removido.', 'Fechar', { duration: 4000 });

@@ -1,19 +1,92 @@
-<section class="grid gap-4 lg:grid-cols-[320px_1fr]">
-  <mat-card class="p-4">
-    <h2 class="mb-3 text-lg font-semibold">Tags</h2>
+<section class="grid gap-4 lg:grid-cols-[360px_1fr]">
+  <mat-card class="space-y-4 p-4">
+    <div>
+      <h2 class="text-lg font-semibold">Tags</h2>
+      <p class="text-sm text-slate-500">
+        Crie uma ou mais tags separando por vírgula, ponto e vírgula ou quebra de linha.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Novas tags</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          [formControl]="createTagsControl"
+          placeholder="Ex.: Clientes VIP, Black Friday"
+        ></textarea>
+        @if (createTagsControl.invalid && createTagsControl.touched) {
+          <mat-error>Informe ao menos uma tag.</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" (click)="createTags()" [disabled]="saving()">
+        Criar
+      </button>
+    </div>
+
     <mat-nav-list>
       @for (tag of tags(); track tag._id ?? tag.title) {
-        <a mat-list-item (click)="selectTag(tag)">
-          <span matListItemTitle>{{ tag.title }}</span>
-          <span matListItemMeta>{{ tag.sent_mails ?? 0 }} envios</span>
-        </a>
+        <div class="rounded-md border border-transparent hover:border-slate-200">
+          @if (editingTagId() === tag._id) {
+            <div class="flex items-start gap-2 p-2">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Editar tag</mat-label>
+                <input matInput [formControl]="editTagControl" />
+                @if (editTagControl.invalid && editTagControl.touched) {
+                  <mat-error>Informe um nome válido.</mat-error>
+                }
+              </mat-form-field>
+
+              <div class="mt-1 flex gap-1">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="saveEdit(tag)"
+                  aria-label="Salvar edição da tag"
+                >
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button (click)="cancelEdit()" aria-label="Cancelar edição da tag">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div mat-list-item (click)="selectTag(tag)">
+              <span matListItemTitle>{{ tag.title }}</span>
+              <div class="flex gap-1" matListItemMeta>
+                <span class="mr-2 text-xs text-slate-500">{{ tag.sent_mails ?? 0 }} envios</span>
+                <button
+                  mat-icon-button
+                  (click)="$event.stopPropagation(); startEdit(tag)"
+                  aria-label="Editar tag {{ tag.title }}"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="$event.stopPropagation(); deleteTag(tag)"
+                  aria-label="Excluir tag {{ tag.title }}"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
       }
     </mat-nav-list>
   </mat-card>
 
   <mat-card class="p-4">
     <h3 class="mb-3 text-lg font-semibold">
-      @if (selectedTag()) { Contatos da tag: {{ selectedTag()?.title }} } @else { Selecione uma tag }
+      @if (selectedTag()) {
+        Contatos da tag: {{ selectedTag()?.title }}
+      } @else {
+        Selecione uma tag
+      }
     </h3>
 
     @if (contacts().length === 0) {

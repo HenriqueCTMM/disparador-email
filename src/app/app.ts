@@ -41,7 +41,7 @@ export class App {
     { path: 'disparo', label: 'Disparo', icon: 'send' },
     { path: 'manutencao', label: 'Manutenção', icon: 'build' },
     { path: 'contatos-removidos', label: 'Removidos', icon: 'person_off' },
-    { path: 'ferramentas', label: 'Ferramentas', icon: 'settings' }
+    // { path: 'ferramentas', label: 'Ferramentas', icon: 'settings' }
   ];
 
   readonly isLoading = this.loadingService.isLoading;
