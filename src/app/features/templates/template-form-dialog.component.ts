@@ -28,6 +28,19 @@ interface TemplateDialogData {
           <mat-label>Assunto</mat-label>
           <input matInput formControlName="subject" />
         </mat-form-field>
+        <div class="flex items-center gap-3">
+          <button mat-stroked-button type="button" (click)="htmlFileInput.click()">
+            Selecionar HTML do computador
+          </button>
+          <input
+            #htmlFileInput
+            type="file"
+            accept=".html,text/html"
+            class="sr-only"
+            aria-label="Selecionar arquivo HTML"
+            (change)="onHtmlFileSelected($event)"
+          />
+        </div>
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>HTML</mat-label>
           <textarea matInput rows="8" formControlName="html"></textarea>
@@ -50,6 +63,30 @@ export class TemplateFormDialogComponent {
     subject: [this.data.initialValue?.subject ?? '', [Validators.required]],
     html: [this.data.initialValue?.html ?? '', [Validators.required]]
   });
+
+  onHtmlFileSelected(event: Event): void {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const selectedFile = input.files?.item(0);
+    if (!selectedFile) {
+      return;
+    }
+
+    selectedFile
+      .text()
+      .then((content) => {
+        this.form.controls.html.setValue(content);
+        this.form.controls.html.markAsDirty();
+        this.form.controls.html.markAsTouched();
+        input.value = '';
+      })
+      .catch(() => {
+        input.value = '';
+      });
+  }
 
   save(): void {
     if (this.form.invalid) {
