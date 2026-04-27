@@ -8,18 +8,18 @@ export class TagsService {
   private readonly http = inject(HttpClient);
 
   createTag(title: string): Observable<Tag> {
-    return this.http.post<Tag>('/d555a343/tags', { title });
+    return this.http.post<Tag>('/tags', { title });
   }
 
   listTags(): Observable<Tag[]> {
-    return this.http.post<Tag[]>('/d555a343/tags', {});
+    return this.http.get<Tag[]>('/tags');
   }
 
   updateTag(id: string, title: string): Observable<Tag> {
-    return this.http.put<Tag>(`/d555a343/tags/${encodeURIComponent(id)}`, { title });
+    return this.http.put<Tag>(`/tags/${encodeURIComponent(id)}`, { title });
   }
 
   deleteTag(id: string): Observable<void> {
-    return this.http.delete<void>(`/d555a343/tags/${encodeURIComponent(id)}`);
+    return this.http.delete<void>(`/tags/${encodeURIComponent(id)}`);
   }
 }

@@ -2,52 +2,42 @@
   <h2 class="mb-4 text-xl font-semibold">Importar contatos</h2>
 
   @if (!hasTags) {
-    <div class="space-y-3">
-      <p class="text-slate-600">Nenhuma tag encontrada. Para importar contatos, crie ou organize tags primeiro.</p>
-      <a mat-flat-button color="primary" routerLink="/tags-contatos">Ir para tela de tags</a>
-    </div>
+  <div class="space-y-3">
+    <p class="text-slate-600">Nenhuma tag encontrada. Para importar contatos, crie ou organize tags primeiro.</p>
+    <a mat-flat-button color="primary" routerLink="/tags-contatos">Ir para tela de tags</a>
+  </div>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
-      <div>
-        <label
-          class="inline-flex cursor-pointer items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-600"
-        >
-          <mat-icon aria-hidden="true">upload_file</mat-icon>
-          <span>Importar arquivo .txt/.csv</span>
-          <input class="hidden" type="file" accept=".txt,.csv" (change)="loadFile($event)" />
-        </label>
-      </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div>
+      <button mat-flat-button type="button" class="btn-import" (click)="fileInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        Importar arquivo .txt/.csv
+      </button>
+      <input #fileInput class="hidden" type="file" accept=".txt,.csv" (change)="loadFile($event)" />
+    </div>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Contatos (nome;email ou apenas email)</mat-label>
-        <textarea
-          #contactsTextarea
-          matInput
-          formControlName="contacts"
-          rows="8"
-          cdkTextareaAutosize
-          cdkAutosizeMinRows="8"
-          cdkAutosizeMaxRows="20"
-          (input)="onContactsInput()"
-        ></textarea>
-        @if (form.controls.contacts.invalid && form.controls.contacts.touched) {
-          <mat-error>Informe ao menos um contato.</mat-error>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Contatos (nome;email ou apenas email)</mat-label>
+      <textarea #contactsTextarea matInput formControlName="contacts" rows="8" cdkTextareaAutosize
+        cdkAutosizeMinRows="8" cdkAutosizeMaxRows="20" (input)="onContactsInput()"></textarea>
+      @if (form.controls.contacts.invalid && form.controls.contacts.touched) {
+      <mat-error>Informe ao menos um contato.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Tags da importação</mat-label>
+      <mat-select formControlName="tags" multiple>
+        @for (tag of tags(); track tag._id ?? tag.title) {
+        <mat-option [value]="tag.title">{{ tag.title }}</mat-option>
         }
-      </mat-form-field>
+      </mat-select>
+      @if (form.controls.tags.invalid && form.controls.tags.touched) {
+      <mat-error>Selecione ao menos uma tag.</mat-error>
+      }
+    </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Tags da importação</mat-label>
-        <mat-select formControlName="tags" multiple>
-          @for (tag of tags(); track tag._id ?? tag.title) {
-            <mat-option [value]="tag.title">{{ tag.title }}</mat-option>
-          }
-        </mat-select>
-        @if (form.controls.tags.invalid && form.controls.tags.touched) {
-          <mat-error>Selecione ao menos uma tag.</mat-error>
-        }
-      </mat-form-field>
-
-      <button mat-flat-button color="primary" type="submit">Importar contatos</button>
-    </form>
+    <button mat-flat-button color="primary" type="submit">Importar contatos</button>
+  </form>
   }
 </mat-card>
