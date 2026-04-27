@@ -22,13 +22,13 @@ interface TemplateDialogData {
   ],
   template: `
     <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Novo template' : 'Editar template' }}</h2>
-    <mat-dialog-content>
+    <mat-dialog-content class="dialog-content">
       <form [formGroup]="form" class="space-y-3 pt-2">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Assunto</mat-label>
           <input matInput formControlName="subject" />
         </mat-form-field>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <button mat-stroked-button type="button" (click)="htmlFileInput.click()">
             Selecionar HTML do computador
           </button>
@@ -43,7 +43,7 @@ interface TemplateDialogData {
         </div>
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>HTML</mat-label>
-          <textarea matInput rows="8" formControlName="html"></textarea>
+          <textarea matInput rows="14" class="html-textarea" formControlName="html"></textarea>
         </mat-form-field>
       </form>
     </mat-dialog-content>
@@ -52,6 +52,17 @@ interface TemplateDialogData {
       <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid">Salvar</button>
     </mat-dialog-actions>
   `,
+  styles: [
+    `
+      .dialog-content {
+        max-height: min(78vh, 780px);
+      }
+
+      .html-textarea {
+        min-height: clamp(280px, 50vh, 560px);
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplateFormDialogComponent {
