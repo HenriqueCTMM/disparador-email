@@ -77,15 +77,17 @@ export class MockApiStorageService {
 
   deleteTag(id: string): boolean {
     const database = this.readDatabase();
-    const exists = database.tags.some((tag) => tag._id === id);
-    if (!exists) {
+    const existing = database.tags.find((tag) => tag._id === id);
+    if (!existing) {
       return false;
     }
 
     database.tags = database.tags.filter((tag) => tag._id !== id);
     database.contacts = database.contacts.map((contact) => ({
       ...contact,
-      tags: (contact.tags ?? []).filter((tagId) => tagId !== id),
+      tags: (contact.tags ?? []).filter(
+        (tagValue) => tagValue !== id && tagValue !== existing.title,
+      ),
       updatedAt: new Date().toISOString(),
     }));
     this.saveDatabase(database);
@@ -149,11 +151,19 @@ export class MockApiStorageService {
     return true;
   }
 
+  private normalizeTagValues(values: string[], database: MockDatabase): string[] {
+    return values.map((value) => {
+      const match = database.tags.find((tag) => tag._id === value || tag.title === value);
+      return match?.title ?? value;
+    });
+  }
+
   importContacts(payload: ImportContactsPayload): { ok: boolean } {
     const database = this.readDatabase();
     const contactsInput = Array.isArray(payload.contacts)
       ? payload.contacts.join('\n')
       : payload.contacts;
+    const normalizedTags = this.normalizeTagValues(payload.tags, database);
 
     const parsedContacts = contactsInput
       .split(/[\n,;]+/)
@@ -164,7 +174,7 @@ export class MockApiStorageService {
     for (const email of parsedContacts) {
       const existing = database.contacts.find((contact) => contact.email.toLowerCase() === email);
       if (existing) {
-        const mergedTags = new Set([...(existing.tags ?? []), ...payload.tags]);
+        const mergedTags = new Set([...(existing.tags ?? []), ...normalizedTags]);
         existing.tags = Array.from(mergedTags);
         existing.updatedAt = now;
         continue;
@@ -174,7 +184,7 @@ export class MockApiStorageService {
         _id: crypto.randomUUID(),
         email,
         name: email.split('@')[0],
-        tags: payload.tags,
+        tags: normalizedTags,
         createdAt: now,
         updatedAt: now,
       });
@@ -185,7 +195,11 @@ export class MockApiStorageService {
   }
 
   listContactsByTag(tagId: string): Contact[] {
-    return this.readDatabase().contacts.filter((contact) => (contact.tags ?? []).includes(tagId));
+    const database = this.readDatabase();
+    const tag = database.tags.find((item) => item._id === tagId);
+    const tagValue = tag?.title ?? tagId;
+
+    return database.contacts.filter((contact) => (contact.tags ?? []).includes(tagValue));
   }
 
   checkContactExists(email: string): { contactExists: boolean } {
@@ -251,8 +265,9 @@ export class MockApiStorageService {
   enqueueMessage(payload: EnqueueMessagePayload): MessageResponse {
     const database = this.readDatabase();
     const template = database.templates.find((item) => item._id === payload.templateId);
+    const normalizedTags = this.normalizeTagValues(payload.tags, database);
     const recipients = database.contacts.filter((contact) =>
-      payload.tags.some((tagId) => (contact.tags ?? []).includes(tagId)),
+      normalizedTags.some((tagValue) => (contact.tags ?? []).includes(tagValue)),
     );
 
     return {
