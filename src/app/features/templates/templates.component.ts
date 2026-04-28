@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -35,6 +35,12 @@ export class TemplatesComponent {
   readonly search = signal('');
   readonly templates = signal<Template[]>([]);
   readonly selectedTemplate = signal<Template | null>(null);
+
+  private readonly templateDialogConfig: MatDialogConfig = {
+    width: 'min(960px, 96vw)',
+    maxWidth: '96vw',
+    minWidth: '320px'
+  };
 
   readonly filteredTemplates = computed(() => {
     const term = this.search().trim().toLowerCase();
@@ -72,7 +78,10 @@ export class TemplatesComponent {
 
   createTemplate(): void {
     this.dialog
-      .open(TemplateFormDialogComponent, { data: { mode: 'create' } })
+      .open(TemplateFormDialogComponent, {
+        ...this.templateDialogConfig,
+        data: { mode: 'create' }
+      })
       .afterClosed()
       .subscribe((payload) => {
         if (!payload) return;
@@ -87,6 +96,7 @@ export class TemplatesComponent {
   editTemplate(template: Template): void {
     this.dialog
       .open(TemplateFormDialogComponent, {
+        ...this.templateDialogConfig,
         data: { mode: 'edit', initialValue: { subject: template.subject, html: template.html } }
       })
       .afterClosed()
