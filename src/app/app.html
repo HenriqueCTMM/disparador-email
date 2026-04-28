@@ -1,6 +1,16 @@
-<mat-toolbar color="primary" class="shadow-sm">
-  <mat-icon aria-hidden="true">mail</mat-icon>
-  <span class="ml-2 font-semibold">{{ pageTitle() }}</span>
+<mat-toolbar color="primary" class="shadow-sm toolbar">
+  <div class="toolbar__title">
+    <mat-icon aria-hidden="true">mail</mat-icon>
+    <span class="ml-2 font-semibold">{{ pageTitle() }}</span>
+  </div>
+
+  <mat-slide-toggle
+    [checked]="mockModeEnabled()"
+    (change)="onMockModeToggle($event)"
+    aria-label="Alternar entre API real e API mockada"
+  >
+    API mock
+  </mat-slide-toggle>
 </mat-toolbar>
 
 @if (isLoading()) {
@@ -12,7 +22,12 @@
     <nav aria-label="Navegação principal" class="p-4">
       <mat-nav-list>
         @for (item of navItems; track item.path) {
-          <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: item.path === '' }">
+          <a
+            mat-list-item
+            [routerLink]="item.path"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: item.path === '' }"
+          >
             <mat-icon matListItemIcon aria-hidden="true">{{ item.icon }}</mat-icon>
             <span matListItemTitle>{{ item.label }}</span>
           </a>

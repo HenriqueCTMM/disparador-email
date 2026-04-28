@@ -5,7 +5,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LoadingService } from './core/services/loading.service';
+import { MockApiModeService } from './core/services/mock-api-mode.service';
 
 interface NavItem {
   path: string;
@@ -23,15 +25,17 @@ interface NavItem {
     MatSidenavModule,
     MatListModule,
     MatIconModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   private readonly loadingService = inject(LoadingService);
   private readonly router = inject(Router);
+  private readonly mockApiModeService = inject(MockApiModeService);
 
   readonly navItems: NavItem[] = [
     { path: '', label: 'Dashboard', icon: 'dashboard' },
@@ -45,8 +49,13 @@ export class App {
   ];
 
   readonly isLoading = this.loadingService.isLoading;
+  readonly mockModeEnabled = this.mockApiModeService.enabled;
   readonly pageTitle = computed(() => {
     const current = this.navItems.find((item) => `/${item.path}` === this.router.url);
     return current?.label ?? 'Disparador de E-mails';
   });
+
+  onMockModeToggle(event: MatSlideToggleChange): void {
+    this.mockApiModeService.setEnabled(event.checked);
+  }
 }
