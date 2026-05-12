@@ -119,8 +119,8 @@ export class MaintenanceComponent {
       return;
     }
 
-    const contacts = parseEmailList(this.removeForm.controls.contacts.value);
-    this.contactsService.removeManually({ contacts }).subscribe((response) => {
+    const emails = parseEmailList(this.removeForm.controls.contacts.value);
+    this.contactsService.removeManually({ emails }).subscribe((response) => {
       const notFoundMessage =
         response.notFound.length > 0 ? ` ${response.notFound.length} não encontrado(s).` : '';
       this.snackBar.open(`${response.message}${notFoundMessage}`, 'Fechar', { duration: 5000 });

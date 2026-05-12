@@ -22,7 +22,7 @@ export interface UpdateContactEmailPayload {
 }
 
 export interface RemoveContactsPayload {
-  contacts: string[] | string;
+  emails: string[];
 }
 
 export interface RemoveContactsResponse {
