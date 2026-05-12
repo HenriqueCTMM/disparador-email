@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Contact, ImportContactsPayload, UpdateContactEmailPayload } from '../models/contact.model';
+import {
+  Contact,
+  ImportContactsPayload,
+  RemoveContactsPayload,
+  RemoveContactsResponse,
+  UpdateContactEmailPayload,
+} from '../models/contact.model';
 import { DeletedContact } from '../models/deleted-contact.model';
 import { EnqueueMessagePayload, MessageResponse } from '../models/campaign.model';
 import { Tag } from '../models/tag.model';
@@ -227,30 +233,61 @@ export class MockApiStorageService {
     return contact;
   }
 
-  removeContact(email: string): string {
+  removeContacts(payload: RemoveContactsPayload): RemoveContactsResponse {
     const database = this.readDatabase();
-    const normalizedEmail = email.toLowerCase();
-    const index = database.contacts.findIndex(
-      (contact) => contact.email.toLowerCase() === normalizedEmail,
+    const contactsInput = Array.isArray(payload.contacts)
+      ? payload.contacts.join('\n')
+      : payload.contacts;
+
+    const emails = Array.from(
+      new Set(
+        contactsInput
+          .split(/[\n,;]+/)
+          .map((value) => value.trim().toLowerCase())
+          .filter((value) => value.includes('@')),
+      ),
     );
 
-    if (index < 0) {
+    const removed: string[] = [];
+    const notFound: string[] = [];
+    const deletedAt = new Date().toISOString();
+    const deletedContacts: DeletedContact[] = [];
+
+    for (const email of emails) {
+      const index = database.contacts.findIndex((contact) => contact.email.toLowerCase() === email);
+
+      if (index < 0) {
+        notFound.push(email);
+        continue;
+      }
+
+      const [contact] = database.contacts.splice(index, 1);
+      removed.push(contact.email);
+      deletedContacts.push({
+        _id: crypto.randomUUID(),
+        email: contact.email,
+        reason: 'Removido manualmente',
+        createdAt: deletedAt,
+        updatedAt: deletedAt,
+      });
+    }
+
+    database.deletedContacts = [...deletedContacts, ...database.deletedContacts];
+    this.saveDatabase(database);
+
+    const message =
+      removed.length > 0 ? `${removed.length} contato(s) removido(s).` : 'Nenhum contato removido.';
+
+    return { message, removed, notFound };
+  }
+
+  removeContact(email: string): string {
+    const response = this.removeContacts({ contacts: [email] });
+
+    if (response.removed.length === 0) {
       return 'Contato não encontrado.';
     }
 
-    const [removed] = database.contacts.splice(index, 1);
-    database.deletedContacts = [
-      {
-        _id: crypto.randomUUID(),
-        email: removed.email,
-        reason: 'Removido manualmente',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      ...database.deletedContacts,
-    ];
-
-    this.saveDatabase(database);
     return 'Contato removido.';
   }
 

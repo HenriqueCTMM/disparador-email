@@ -2,7 +2,11 @@ import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/com
 import { inject } from '@angular/core';
 import { Observable, delay, of, throwError } from 'rxjs';
 import { EnqueueMessagePayload } from '../models/campaign.model';
-import { ImportContactsPayload, UpdateContactEmailPayload } from '../models/contact.model';
+import {
+  ImportContactsPayload,
+  RemoveContactsPayload,
+  UpdateContactEmailPayload,
+} from '../models/contact.model';
 import { TemplatePayload } from '../models/template.model';
 import { MockApiModeService } from '../services/mock-api-mode.service';
 import { MockApiStorageService } from '../services/mock-api-storage.service';
@@ -146,6 +150,15 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       new HttpResponse({
         status: 200,
         body: storage.updateContactEmail(req.body as UpdateContactEmailPayload),
+      }),
+    ).pipe(delay(MOCK_RESPONSE_DELAY_MS));
+  }
+
+  if (req.method === 'PUT' && path === '/321sasr323/delContatos') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: storage.removeContacts(req.body as RemoveContactsPayload),
       }),
     ).pipe(delay(MOCK_RESPONSE_DELAY_MS));
   }

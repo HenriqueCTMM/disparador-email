@@ -9,7 +9,7 @@ describe('ContactsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(ContactsService);
@@ -32,6 +32,19 @@ describe('ContactsService', () => {
 
     const request = httpMock.expectOne('/CS2aa3242/contact');
     expect(request.request.method).toBe('PUT');
-    expect(request.request.body).toEqual({ contact: 'old@example.com', newEmail: 'new@example.com' });
+    expect(request.request.body).toEqual({
+      contact: 'old@example.com',
+      newEmail: 'new@example.com',
+    });
+  });
+
+  it('should remove contacts manually as a list payload', () => {
+    const payload = { contacts: ['first@example.com', 'second@example.com'] };
+
+    service.removeManually(payload).subscribe();
+
+    const request = httpMock.expectOne('/321sasr323/delContatos');
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual(payload);
   });
 });

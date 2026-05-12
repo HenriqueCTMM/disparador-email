@@ -83,7 +83,7 @@ apiBaseUrl: 'http://localhost:3334';
 
 - `POST /CS2aa3242/contact/:contact`
 - `PUT /CS2aa3242/contact`
-- `PUT /321sasr323/delContatos/:contact`
+- `PUT /321sasr323/delContatos` (remoção manual em lote via payload `contacts`)
 
 ### Contatos Removidos (`/contatos-removidos`)
 
@@ -99,9 +99,10 @@ apiBaseUrl: 'http://localhost:3334';
 
 ## Tratamento defensivo adotado
 
-- Endpoint de remoção manual retorna tipo não determinístico; a UI trata resposta como `unknown` e aplica fallback textual amigável.
+- Endpoint de remoção manual em lote retorna resumo com mensagem, contatos removidos e contatos não encontrados para feedback direto ao usuário.
 - Mensagens de erro usam prioridade para `error.message` do backend e fallback por status HTTP (400/404/500/0).
 - E-mails são normalizados para lowercase e trim antes de operações críticas de manutenção.
+- A remoção manual usa o mesmo padrão de lista da importação: campo multilinha e upload `.txt/.csv`, aceitando separação por quebra de linha, vírgula ou ponto e vírgula.
 
 ## Endpoints sem UI administrativa
 
