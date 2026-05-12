@@ -233,18 +233,13 @@ export class MockApiStorageService {
     return contact;
   }
 
-  removeContacts(payload: RemoveContactsPayload): RemoveContactsResponse {
+  removeContacts(payload: RemoveContactsPayload | string[]): RemoveContactsResponse {
     const database = this.readDatabase();
-    const contactsInput = Array.isArray(payload.contacts)
-      ? payload.contacts.join('\n')
-      : payload.contacts;
+    const emailList = Array.isArray(payload) ? payload : payload.emails;
 
     const emails = Array.from(
       new Set(
-        contactsInput
-          .split(/[\n,;]+/)
-          .map((value) => value.trim().toLowerCase())
-          .filter((value) => value.includes('@')),
+        emailList.map((value) => value.trim().toLowerCase()).filter((value) => value.includes('@')),
       ),
     );
 
@@ -282,7 +277,7 @@ export class MockApiStorageService {
   }
 
   removeContact(email: string): string {
-    const response = this.removeContacts({ contacts: [email] });
+    const response = this.removeContacts({ emails: [email] });
 
     if (response.removed.length === 0) {
       return 'Contato não encontrado.';
