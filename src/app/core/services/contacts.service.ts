@@ -5,7 +5,9 @@ import {
   CheckContactResponse,
   Contact,
   ImportContactsPayload,
-  UpdateContactEmailPayload
+  RemoveContactsPayload,
+  RemoveContactsResponse,
+  UpdateContactEmailPayload,
 } from '../models/contact.model';
 
 @Injectable({ providedIn: 'root' })
@@ -21,14 +23,17 @@ export class ContactsService {
   }
 
   checkExists(email: string): Observable<CheckContactResponse> {
-    return this.http.post<CheckContactResponse>(`/CS2aa3242/contact/${encodeURIComponent(email)}`, {});
+    return this.http.post<CheckContactResponse>(
+      `/CS2aa3242/contact/${encodeURIComponent(email)}`,
+      {},
+    );
   }
 
   updateEmail(payload: UpdateContactEmailPayload): Observable<Contact | null> {
     return this.http.put<Contact | null>('/CS2aa3242/contact', payload);
   }
 
-  removeManually(email: string): Observable<unknown> {
-    return this.http.put<unknown>(`/321sasr323/delContatos/${encodeURIComponent(email)}`, {});
+  removeManually(payload: RemoveContactsPayload): Observable<RemoveContactsResponse> {
+    return this.http.put<RemoveContactsResponse>('/321sasr323/delContatos', payload);
   }
 }

@@ -20,3 +20,13 @@ export interface UpdateContactEmailPayload {
   contact: string;
   newEmail: string;
 }
+
+export interface RemoveContactsPayload {
+  contacts: string[] | string;
+}
+
+export interface RemoveContactsResponse {
+  message: string;
+  removed: string[];
+  notFound: string[];
+}
