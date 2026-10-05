@@ -83,7 +83,7 @@ apiBaseUrl: 'http://localhost:3334';
 
 - `POST /CS2aa3242/contact/:contact`
 - `PUT /CS2aa3242/contact`
-- `PUT /321sasr323/delContatos` (remoção manual em lote via payload `contacts`)
+- `PUT /321sasr323/delContatos` (remoção manual em lote via payload `emails`)
 
 ### Contatos Removidos (`/contatos-removidos`)
 

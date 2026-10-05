@@ -7,6 +7,7 @@ import { apiBaseUrlInterceptor } from './core/interceptors/api-base-url.intercep
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { mockApiInterceptor } from './core/interceptors/mock-api.interceptor';
+import { apiKeyInterceptor } from './core/interceptors/api-key.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withInterceptors([
+        apiKeyInterceptor,
         mockApiInterceptor,
         apiBaseUrlInterceptor,
         loadingInterceptor,

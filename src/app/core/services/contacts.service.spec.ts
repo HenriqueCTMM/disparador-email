@@ -39,7 +39,7 @@ describe('ContactsService', () => {
   });
 
   it('should remove contacts manually as a list payload', () => {
-    const payload = { contacts: ['first@example.com', 'second@example.com'] };
+    const payload = { emails: ['first@example.com', 'second@example.com'] };
 
     service.removeManually(payload).subscribe();
 

@@ -235,21 +235,15 @@ export class MockApiStorageService {
 
   removeContacts(payload: RemoveContactsPayload): RemoveContactsResponse {
     const database = this.readDatabase();
-    const contactsInput = Array.isArray(payload.contacts)
-      ? payload.contacts.join('\n')
-      : payload.contacts;
-
     const emails = Array.from(
       new Set(
-        contactsInput
-          .split(/[\n,;]+/)
+        payload.emails
           .map((value) => value.trim().toLowerCase())
           .filter((value) => value.includes('@')),
       ),
     );
 
-    const removed: string[] = [];
-    const notFound: string[] = [];
+    const results: RemoveContactsResponse['results'] = [];
     const deletedAt = new Date().toISOString();
     const deletedContacts: DeletedContact[] = [];
 
@@ -257,12 +251,22 @@ export class MockApiStorageService {
       const index = database.contacts.findIndex((contact) => contact.email.toLowerCase() === email);
 
       if (index < 0) {
-        notFound.push(email);
+        results.push({
+          email,
+          deleted: false,
+          reason: 'remoção manual',
+          message: 'Contato não encontrado.',
+        });
         continue;
       }
 
       const [contact] = database.contacts.splice(index, 1);
-      removed.push(contact.email);
+      results.push({
+        email: contact.email,
+        deleted: true,
+        reason: 'remoção manual',
+        message: 'Contato removido.',
+      });
       deletedContacts.push({
         _id: crypto.randomUUID(),
         email: contact.email,
@@ -275,16 +279,18 @@ export class MockApiStorageService {
     database.deletedContacts = [...deletedContacts, ...database.deletedContacts];
     this.saveDatabase(database);
 
-    const message =
-      removed.length > 0 ? `${removed.length} contato(s) removido(s).` : 'Nenhum contato removido.';
-
-    return { message, removed, notFound };
+    return {
+      requested: emails.length,
+      deleted: deletedContacts.length,
+      notFound: results.filter((result) => !result.deleted).length,
+      results,
+    };
   }
 
   removeContact(email: string): string {
-    const response = this.removeContacts({ contacts: [email] });
+    const response = this.removeContacts({ emails: [email] });
 
-    if (response.removed.length === 0) {
+    if (response.deleted === 0) {
       return 'Contato não encontrado.';
     }
 

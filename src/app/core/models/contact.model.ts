@@ -22,11 +22,19 @@ export interface UpdateContactEmailPayload {
 }
 
 export interface RemoveContactsPayload {
-  contacts: string[] | string;
+  emails: string[];
+}
+
+export interface RemoveContactResult {
+  email: string;
+  deleted: boolean;
+  reason?: string;
+  message?: string;
 }
 
 export interface RemoveContactsResponse {
-  message: string;
-  removed: string[];
-  notFound: string[];
+  requested: number;
+  deleted: number;
+  notFound: number;
+  results: RemoveContactResult[];
 }

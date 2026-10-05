@@ -119,11 +119,15 @@ export class MaintenanceComponent {
       return;
     }
 
-    const contacts = parseEmailList(this.removeForm.controls.contacts.value);
-    this.contactsService.removeManually({ contacts }).subscribe((response) => {
+    const emails = parseEmailList(this.removeForm.controls.contacts.value);
+    this.contactsService.removeManually({ emails }).subscribe((response) => {
       const notFoundMessage =
-        response.notFound.length > 0 ? ` ${response.notFound.length} não encontrado(s).` : '';
-      this.snackBar.open(`${response.message}${notFoundMessage}`, 'Fechar', { duration: 5000 });
+        response.notFound > 0 ? ` ${response.notFound} não encontrado(s).` : '';
+      const message =
+        response.deleted > 0
+          ? `${response.deleted} contato(s) removido(s).`
+          : 'Nenhum contato removido.';
+      this.snackBar.open(`${message}${notFoundMessage}`, 'Fechar', { duration: 5000 });
       this.removeForm.reset({ contacts: '' });
       this.expandTextarea();
     });
